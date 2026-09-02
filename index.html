@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PTO Ledger — Matt</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<meta name="theme-color" content="#012D61">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -194,11 +200,10 @@
   table.ledger tr.today{background:var(--accent-soft);}
   table.ledger tr.future td{color:var(--ink-faint);}
   table.ledger tr.over td.balance{color:var(--danger);font-weight:600;}
-  table.ledger input.used-input, table.ledger input.rate-input, table.ledger input.fte-input{
-    width:64px;border:1px solid var(--line);border-radius:4px;padding:4px 6px;
-    font-family:'IBM Plex Mono',monospace;font-size:13px;background:var(--bg);color:var(--ink);
+  table.ledger input.used-input{
+    width:104px;border:1px solid var(--line);border-radius:4px;padding:5px 8px;
+    font-family:'IBM Plex Mono',monospace;font-size:13.5px;background:var(--bg);color:var(--ink);
   }
-  table.ledger input.fte-input{width:52px;}
   .flag{font-size:11px;padding:2px 7px;border-radius:999px;background:var(--danger-soft);color:var(--danger);white-space:nowrap;}
 
   footer{text-align:center;color:var(--ink-faint);font-size:12px;margin-top:30px;}
@@ -256,17 +261,8 @@
             <label for="anchorEnd">A known pay period end date (Tuesday)</label>
             <input type="date" id="anchorEnd">
           </div>
-          <div class="field">
-            <label for="horizon">Show periods this far into the future</label>
-            <select id="horizon">
-              <option value="4">4 pay periods (~2 months)</option>
-              <option value="13">13 pay periods (~6 months)</option>
-              <option value="26">26 pay periods (~1 year)</option>
-              <option value="52">52 pay periods (~2 years)</option>
-            </select>
-          </div>
         </div>
-        <p class="hint">The anchor date calibrates the Wed–Tue pay period grid — pick any pay period end date you know for certain from a pay stub. A tier change takes effect on the first pay period that starts on or after your service anniversary.</p>
+        <p class="hint">The anchor date calibrates the Wed–Tue pay period grid — pick any pay period end date you know for certain from a pay stub. A tier change takes effect on the first pay period that starts on or after your service anniversary. The ledger always shows through the end of next year.</p>
       </fieldset>
 
       <fieldset>
@@ -315,7 +311,6 @@ const DEFAULT_SETTINGS = {
   startDate: "2024-07-22",
   fte: 1.0,
   anchorEnd: "2026-08-25",
-  horizon: 13,
   tiers: [
     { minYears: 0,  label: "Less than 2 years", hoursPP: 7.08,  maxHours: 276 },
     { minYears: 2,  label: "2–9 years",         hoursPP: 8.62,  maxHours: 336 },
@@ -420,10 +415,11 @@ function buildPeriods(hireDate, anchorEndISO, throughDate) {
 function computeLedger() {
   const hire = parseISO(settings.startDate);
   const today = todayUTC();
-  const horizonDays = Number(settings.horizon) * 14;
+  // Always show through the end of next calendar year, regardless of today's date.
+  const nextYearEnd = new Date(Date.UTC(today.getUTCFullYear() + 1, 11, 31));
   const latestEntryDate = Object.keys(entries).reduce((max,k)=> k>max?k:max, settings.startDate);
   const through = new Date(Math.max(
-    addDays(today, horizonDays).getTime(),
+    nextYearEnd.getTime(),
     addDays(parseISO(latestEntryDate), 14).getTime()
   ));
 
@@ -521,7 +517,6 @@ function renderSettingsFields() {
   document.getElementById("startDate").value = settings.startDate;
   document.getElementById("fte").value = settings.fte;
   document.getElementById("anchorEnd").value = settings.anchorEnd;
-  document.getElementById("horizon").value = String(settings.horizon);
   document.getElementById("ghToken").value = ghToken;
   document.getElementById("autoSync").checked = !!settings.github.autoSync;
 }
@@ -555,7 +550,7 @@ function renderLedger(periods, current) {
           <table class="ledger">
             <thead>
               <tr>
-                <th>Pay period</th><th>Pay date</th><th>Earning rate</th><th>FTE</th>
+                <th>Pay period</th><th>Pay date</th><th>Earning rate</th>
                 <th>Used</th><th>Beginning balance</th><th>Max</th>
               </tr>
             </thead>
@@ -573,8 +568,7 @@ function renderLedger(periods, current) {
       tr.innerHTML = `
         <td title="${p.tierLabel}">${fmtPeriod(p.start, p.end)}</td>
         <td>${fmtShort(p.payDay)}</td>
-        <td><input class="rate-input" type="number" step="0.01" min="0" value="${p.earned.toFixed(2)}" data-key="${p.key}"></td>
-        <td><input class="fte-input" type="number" step="0.05" min="0" max="1.5" value="${p.fte.toFixed(2)}" data-key="${p.key}"></td>
+        <td>${p.earned.toFixed(2)}</td>
         <td><input class="used-input" type="number" step="0.25" min="0" value="${p.used ? p.used.toFixed(2) : ""}" placeholder="0.00" data-key="${p.key}"></td>
         <td class="balance">${p.beginBalance.toFixed(2)}</td>
         <td>${p.maxHours.toFixed(2)}</td>
@@ -589,22 +583,6 @@ function renderLedger(periods, current) {
       const key = e.target.dataset.key;
       const val = e.target.value === "" ? 0 : Number(e.target.value);
       entries[key] = Object.assign({}, entries[key], { used: val });
-      onDataChange();
-    });
-  });
-  container.querySelectorAll(".rate-input").forEach(inp => {
-    inp.addEventListener("change", e => {
-      const key = e.target.dataset.key;
-      const val = e.target.value === "" ? null : Number(e.target.value);
-      entries[key] = Object.assign({}, entries[key], { earnedOverride: val });
-      onDataChange();
-    });
-  });
-  container.querySelectorAll(".fte-input").forEach(inp => {
-    inp.addEventListener("change", e => {
-      const key = e.target.dataset.key;
-      const val = e.target.value === "" ? null : Number(e.target.value);
-      entries[key] = Object.assign({}, entries[key], { fte: val });
       onDataChange();
     });
   });
@@ -660,7 +638,6 @@ function init() {
   document.getElementById("startDate").addEventListener("change", e => { settings.startDate = e.target.value; onDataChange(); });
   document.getElementById("fte").addEventListener("change", e => { settings.fte = Number(e.target.value); onDataChange(); });
   document.getElementById("anchorEnd").addEventListener("change", e => { settings.anchorEnd = e.target.value; onDataChange(); });
-  document.getElementById("horizon").addEventListener("change", e => { settings.horizon = Number(e.target.value); onDataChange(); });
   document.getElementById("addTierBtn").addEventListener("click", () => {
     settings.tiers.push({ minYears: 0, label: "New tier", hoursPP: 0, maxHours: 0 });
     onDataChange();
