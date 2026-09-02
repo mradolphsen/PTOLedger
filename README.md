@@ -3,7 +3,7 @@
 A single-page PTO accrual tracker, calibrated to a Wed–Tue, 14-day pay period
 grid and styled with Mayo Clinic's colors and typefaces. Runs entirely in
 the browser — no server required — and syncs its data to a JSON file in the
-`mradolphsen/PTOcalculator` repo so the same numbers follow you between
+`mradolphsen/PTOLedger` repo so the same numbers follow you between
 computers.
 
 ## 1. Put it on GitHub Pages
@@ -12,7 +12,7 @@ computers.
 
 1. Go to **Settings → Pages** in this repo, set the source to **Deploy from
    a branch**, pick `main` and `/ (root)`, and save.
-2. GitHub gives you a URL like `https://mradolphsen.github.io/PTOcalculator/`
+2. GitHub gives you a URL like `https://mradolphsen.github.io/PTOLedger/`
    — bookmark that on both computers.
 
 ## 2. Create a token so the page can save your data
@@ -24,7 +24,7 @@ personal access token**:
 1. GitHub → **Settings → Developer settings → Personal access tokens →
    Fine-grained tokens → Generate new token**.
 2. Under **Repository access**, choose **Only select repositories** and pick
-   `PTOcalculator`.
+   `PTOLedger`.
 3. Under **Permissions → Repository permissions**, set **Contents** to
    **Read and write**. Leave everything else as **No access**.
 4. Generate it and copy the token — GitHub only shows it once.
