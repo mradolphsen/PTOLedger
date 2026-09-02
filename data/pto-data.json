@@ -2,8 +2,6 @@
   "settings": {
     "startDate": "2024-07-22",
     "fte": 1,
-    "anchorEnd": "2026-08-25",
-    "horizon": 13,
     "tiers": [
       {
         "minYears": 0,
@@ -38,12 +36,14 @@
     ],
     "github": {
       "autoSync": true
-    }
+    },
+    "anchorEnd": "2026-08-25",
+    "horizon": 13
   },
   "entries": {
     "2024-07-17": {
       "earnedOverride": 4.92,
-      "used": 8
+      "used": 0
     },
     "2026-01-14": {
       "fte": 1,
@@ -53,5 +53,5 @@
       "used": 24
     }
   },
-  "savedAt": "2026-09-02T22:39:33.786Z"
+  "savedAt": "2026-09-02T23:37:25.976Z"
 }
