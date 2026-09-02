@@ -321,7 +321,7 @@ const DEFAULT_SETTINGS = {
 // Seed data: the first pay period (hire period) earned a prorated amount
 // since employment started partway through it, rather than the full rate.
 const DEFAULT_ENTRIES = {
-  "2024-07-17": { earnedOverride: 4.92 },
+  "2024-07-17": { earnedOverride: 2.85 },
 };
 const LS_SETTINGS = "pto_settings_v1";
 const LS_ENTRIES  = "pto_entries_v1";
@@ -330,7 +330,7 @@ const LS_SHA      = "pto_gh_sha_v1";
 
 /* ============================= STATE ============================= */
 let settings = loadJSON(LS_SETTINGS, DEFAULT_SETTINGS);
-let entries  = loadJSON(LS_ENTRIES, DEFAULT_ENTRIES); // { "2024-07-17": { used: 8, fte: 1.0, earnedOverride: 4.92 } }
+let entries  = loadJSON(LS_ENTRIES, DEFAULT_ENTRIES); // { "2024-07-17": { used: 8, fte: 1.0, earnedOverride: 2.85 } }
 let ghToken  = localStorage.getItem(LS_TOKEN) || "";
 let ghSha    = localStorage.getItem(LS_SHA) || null;
 let saveTimer = null;
