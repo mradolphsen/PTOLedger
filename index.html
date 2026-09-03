@@ -23,6 +23,7 @@
 >
 
 <style>
+
 /* ============================================================
    MAYO-INSPIRED DESIGN SYSTEM
    No Mayo Clinic logo or proprietary marks are used.
@@ -305,8 +306,16 @@ button.icon-btn:hover{
   margin-left:3px;
 }
 
+/*
+ * Maximum reached / exceeded.
+ *
+ * This restores the original visual indicator:
+ * Available Now becomes bold red when the current balance
+ * is at or above the applicable maximum.
+ */
 .stat.warn .value{
   color:var(--danger);
+  font-weight:800;
 }
 
 .stat .foot{
@@ -460,46 +469,6 @@ legend{
   margin-top:6px;
 
   line-height:1.5;
-}
-
-
-/* ============================================================
-   SETTINGS TOGGLE
-   ============================================================ */
-
-.setting-toggle{
-  display:flex;
-
-  align-items:flex-start;
-
-  gap:10px;
-
-  padding:12px;
-
-  border:1px solid var(--line);
-
-  border-radius:var(--radius-sm);
-
-  background:var(--blue-pale);
-
-  margin-bottom:12px;
-}
-
-.setting-toggle input{
-  margin-top:4px;
-  flex:none;
-}
-
-.setting-toggle label{
-  margin:0;
-
-  font-size:13.5px;
-
-  color:var(--ink);
-}
-
-.setting-toggle strong{
-  color:var(--navy);
 }
 
 
@@ -727,7 +696,7 @@ table.ledger{
 
   font-size:13.5px;
 
-  min-width:850px;
+  min-width:770px;
 }
 
 table.ledger th{
@@ -780,12 +749,6 @@ table.ledger tr.future td{
   color:var(--ink-faint);
 }
 
-table.ledger tr.over td.balance{
-  color:var(--danger);
-
-  font-weight:600;
-}
-
 
 /* ============================================================
    BEGINNING BALANCE
@@ -795,20 +758,94 @@ table.ledger tr.over td.balance{
   min-width:170px;
 }
 
-.beginning-display{
+
+/*
+ * The beginning balance is an invisible hyperlink/action.
+ *
+ * It intentionally looks exactly like ordinary ledger text.
+ * The only visible indication is the normal cursor and the
+ * keyboard focus outline for accessibility.
+ */
+.beginning-edit-link{
+  appearance:none;
+
   display:inline-flex;
 
   align-items:center;
 
   gap:4px;
+
+  color:inherit;
+
+  text-decoration:none;
+
+  cursor:pointer;
+
+  border:0;
+
+  background:transparent;
+
+  border-radius:3px;
+
+  padding:1px 2px;
+
+  margin:-1px -2px;
+
+  font-family:inherit;
+
+  font-size:inherit;
+
+  font-weight:inherit;
+
+  font-style:inherit;
+
+  line-height:inherit;
+
+  font-variant-numeric:tabular-nums;
+
+  text-align:left;
 }
 
-.beginning-display.corrected{
+.beginning-edit-link:hover{
+  color:inherit;
+  text-decoration:none;
+}
+
+.beginning-edit-link:focus-visible{
+  outline:2px solid var(--blue);
+  outline-offset:2px;
+}
+
+
+/*
+ * Corrected balances retain the original italic treatment.
+ */
+.beginning-edit-link.corrected{
   font-style:italic;
+}
 
-  color:var(--navy);
 
-  font-weight:500;
+/*
+ * Maximum reached:
+ *
+ * Beginning balance becomes bold red when it is at or above
+ * the applicable PTO maximum.
+ */
+.beginning-edit-link.maxed{
+  color:var(--danger);
+  font-weight:800;
+}
+
+
+/*
+ * Corrected + maxed:
+ * preserve italic correction styling while also showing
+ * the maximum warning.
+ */
+.beginning-edit-link.corrected.maxed{
+  color:var(--danger);
+  font-weight:800;
+  font-style:italic;
 }
 
 .corrected-star{
@@ -816,29 +853,7 @@ table.ledger tr.over td.balance{
 
   font-weight:700;
 
-  color:var(--navy);
-}
-
-.beginning-input{
-  width:115px;
-
-  border:1px solid var(--line);
-
-  border-radius:4px;
-
-  padding:5px 8px;
-
-  font-family:'IBM Plex Mono',monospace;
-
-  font-size:13.5px;
-
-  background:var(--bg);
-
-  color:var(--ink);
-}
-
-.beginning-input:focus{
-  border-color:var(--blue);
+  color:inherit;
 }
 
 
@@ -866,40 +881,7 @@ table.ledger input.used-input{
 
 
 /* ============================================================
-   FLAGS
-   ============================================================ */
-
-.flag{
-  font-size:11px;
-
-  padding:2px 7px;
-
-  border-radius:999px;
-
-  background:var(--danger-soft);
-
-  color:var(--danger);
-
-  white-space:nowrap;
-}
-
-.maxed{
-  font-size:11px;
-
-  padding:2px 7px;
-
-  border-radius:999px;
-
-  background:var(--amber-soft);
-
-  color:#8A6200;
-
-  white-space:nowrap;
-}
-
-
-/* ============================================================
-   MODAL
+   MODALS
    ============================================================ */
 
 .modal-overlay{
@@ -937,6 +919,10 @@ table.ledger input.used-input{
 
   box-shadow:
     0 12px 40px rgba(15,20,19,0.25);
+}
+
+.modal-dialog.small{
+  max-width:440px;
 }
 
 .modal-head{
@@ -981,6 +967,81 @@ table.ledger input.used-input{
   max-height:78vh;
 
   overflow-y:auto;
+}
+
+
+/* ============================================================
+   BEGINNING BALANCE CORRECTION MODAL
+   ============================================================ */
+
+.correction-summary{
+  background:var(--blue-pale);
+
+  border:1px solid var(--line);
+
+  border-radius:var(--radius-sm);
+
+  padding:12px 14px;
+
+  margin-bottom:16px;
+}
+
+.correction-summary-row{
+  display:flex;
+
+  justify-content:space-between;
+
+  gap:16px;
+
+  margin-bottom:5px;
+}
+
+.correction-summary-row:last-child{
+  margin-bottom:0;
+}
+
+.correction-summary-label{
+  color:var(--ink-muted);
+  font-size:12.5px;
+}
+
+.correction-summary-value{
+  color:var(--ink);
+  font-family:'IBM Plex Mono',monospace;
+  font-size:13px;
+  text-align:right;
+}
+
+.correction-warning{
+  margin-top:8px;
+
+  font-size:12.5px;
+
+  color:var(--ink-muted);
+
+  line-height:1.5;
+}
+
+.correction-actions{
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  gap:10px;
+
+  margin-top:18px;
+
+  flex-wrap:wrap;
+}
+
+.correction-actions-right{
+  display:flex;
+
+  gap:8px;
+
+  flex-wrap:wrap;
 }
 
 
@@ -1052,7 +1113,17 @@ footer a{
     padding-left:14px;
     padding-right:14px;
   }
+
+  .correction-summary-row{
+    flex-direction:column;
+    gap:2px;
+  }
+
+  .correction-summary-value{
+    text-align:left;
+  }
 }
+
 </style>
 </head>
 
@@ -1289,55 +1360,6 @@ footer a{
 
 
       <!-- ======================================================
-           BEGINNING BALANCE CORRECTIONS
-           ====================================================== -->
-
-      <fieldset>
-
-        <legend>
-          Beginning balance corrections
-        </legend>
-
-
-        <div class="setting-toggle">
-
-          <input
-            type="checkbox"
-            id="enableBeginningCorrections"
-          >
-
-          <label for="enableBeginningCorrections">
-
-            <strong>
-              Enable beginning-balance corrections
-            </strong>
-
-            <br>
-
-            Allow individual pay-period beginning balances
-            to be corrected when the calculated balance differs
-            from the balance shown by your payroll/timekeeping
-            system.
-
-          </label>
-
-        </div>
-
-
-        <p class="hint">
-
-          When enabled, a Beginning balance field will appear
-          in the ledger. Corrected balances are shown in
-          <em>italics with an asterisk (*)</em>. A correction
-          becomes the starting balance for that pay period and
-          is carried forward through subsequent periods.
-
-        </p>
-
-      </fieldset>
-
-
-      <!-- ======================================================
            GITHUB SYNC
            ====================================================== -->
 
@@ -1466,6 +1488,115 @@ footer a{
 </div>
 
 
+<!-- ==========================================================
+     BEGINNING BALANCE CORRECTION MODAL
+     ========================================================== -->
+
+<div
+  class="modal-overlay"
+  id="correctionOverlay"
+>
+
+  <div
+    class="modal-dialog small"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="correctionModalTitle"
+  >
+
+    <div class="modal-head">
+
+      <h2 id="correctionModalTitle">
+        Correct Beginning Balance
+      </h2>
+
+      <button
+        class="icon-btn"
+        id="closeCorrectionBtn"
+        aria-label="Close correction dialog"
+      >
+        ✕
+      </button>
+
+    </div>
+
+
+    <div class="modal-body">
+
+      <div
+        class="correction-summary"
+        id="correctionSummary"
+      ></div>
+
+
+      <div class="field">
+
+        <label for="correctionValue">
+          Beginning balance (hours)
+        </label>
+
+        <input
+          type="number"
+          id="correctionValue"
+          step="0.01"
+          min="0"
+          inputmode="decimal"
+          placeholder="Enter balance"
+          autocomplete="off"
+        >
+
+      </div>
+
+
+      <div class="correction-warning">
+
+        Enter the balance that your payroll or timekeeping
+        system shows for the beginning of this pay period.
+        This correction becomes the starting point for this
+        period and flows through subsequent periods.
+
+        If you remove the correction, the ledger returns to
+        its normal calculated beginning balance.
+
+      </div>
+
+
+      <div class="correction-actions">
+
+        <button
+          class="btn ghost"
+          id="removeCorrectionBtn"
+        >
+          Remove Correction
+        </button>
+
+        <div class="correction-actions-right">
+
+          <button
+            class="btn"
+            id="cancelCorrectionBtn"
+          >
+            Cancel
+          </button>
+
+          <button
+            class="btn primary"
+            id="saveCorrectionBtn"
+          >
+            Save Correction
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
 <script>
 
 /* ============================================================
@@ -1496,12 +1627,6 @@ const DEFAULT_SETTINGS = {
   startDate: "2024-07-22",
 
   fte: 1.0,
-
-  /*
-   * Controls whether corrected beginning balances
-   * are available in the ledger.
-   */
-  enableBeginningCorrections: false,
 
   tiers: [
 
@@ -1578,9 +1703,11 @@ const LS_SHA = "pto_gh_sha_v1";
    ============================================================ */
 
 let settings =
-  loadJSON(
-    LS_SETTINGS,
-    DEFAULT_SETTINGS
+  normalizeSettings(
+    loadJSON(
+      LS_SETTINGS,
+      DEFAULT_SETTINGS
+    )
   );
 
 
@@ -1606,6 +1733,14 @@ let dirty = false;
 
 
 /*
+ * Which beginning-balance correction is currently being edited.
+ *
+ * This is temporary UI state only.
+ */
+let correctionEditKey = null;
+
+
+/*
  * Which year groups are expanded.
  */
 let openYears =
@@ -1618,7 +1753,7 @@ let openYears =
    LOCAL STORAGE
    ============================================================ */
 
-function loadJSON(key, fallback){
+function loadJSON(key,fallback){
 
   try{
 
@@ -1643,6 +1778,54 @@ function loadJSON(key, fallback){
     return structuredClone(fallback);
 
   }
+
+}
+
+
+/*
+ * Normalize settings while maintaining compatibility with
+ * older saved versions of the application.
+ *
+ * Older versions contained enableBeginningCorrections.
+ * It is intentionally removed from the active settings model.
+ */
+function normalizeSettings(raw){
+
+  const source =
+    raw || {};
+
+
+  const normalized =
+    Object.assign(
+      structuredClone(DEFAULT_SETTINGS),
+      source
+    );
+
+
+  normalized.github =
+    Object.assign(
+      {},
+      DEFAULT_SETTINGS.github,
+      source.github || {}
+    );
+
+
+  normalized.tiers =
+    Array.isArray(source.tiers)
+      ? source.tiers
+      : structuredClone(
+          DEFAULT_SETTINGS.tiers
+        );
+
+
+  /*
+   * Beginning-balance corrections are now always available
+   * by clicking the balance itself.
+   */
+  delete normalized.enableBeginningCorrections;
+
+
+  return normalized;
 
 }
 
@@ -2087,8 +2270,6 @@ function computeLedger(){
 
   let balance = 0;
 
-  let correctionActive = false;
-
 
   for(const p of periods){
 
@@ -2141,8 +2322,9 @@ function computeLedger(){
     /*
      * Beginning balance.
      *
-     * If a correction exists for this period,
-     * it overrides the calculated beginning balance.
+     * A saved correction always applies.
+     *
+     * There is no longer an editing-mode condition.
      */
     let beginBalance;
 
@@ -2150,7 +2332,6 @@ function computeLedger(){
 
 
     if(
-      settings.enableBeginningCorrections &&
       entry.beginningBalanceOverride != null &&
       entry.beginningBalanceOverride !== ""
     ){
@@ -2163,8 +2344,6 @@ function computeLedger(){
         );
 
       beginningCorrected = true;
-
-      correctionActive = true;
 
     }
 
@@ -2186,45 +2365,21 @@ function computeLedger(){
 
 
     /*
-     * Determine actual accrual.
-     *
-     * IMPORTANT:
-     *
-     * PTO cannot accrue above the applicable maximum.
-     *
-     * If the beginning balance is already at or above
-     * the maximum, earned PTO = 0.
-     *
-     * If only part of the normal accrual fits under the
-     * maximum, only that amount is credited.
+     * Determine requested accrual.
      */
-    let earned;
+    let requestedEarned;
 
 
-    /*
-     * Explicit earned override takes precedence.
-     * However, it is still capped at the maximum.
-     */
     if(
       entry.earnedOverride != null &&
       entry.earnedOverride !== ""
     ){
 
-      const requested =
+      requestedEarned =
         Math.max(
           0,
-          Number(entry.earnedOverride)
-        );
-
-
-      earned =
-        round2(
-          Math.min(
-            requested,
-            Math.max(
-              0,
-              maxHours - beginBalance
-            )
+          Number(
+            entry.earnedOverride
           )
         );
 
@@ -2232,21 +2387,28 @@ function computeLedger(){
 
     else{
 
-      earned =
-        round2(
-          Math.min(
-            Math.max(
-              0,
-              computedEarned
-            ),
-            Math.max(
-              0,
-              maxHours - beginBalance
-            )
-          )
+      requestedEarned =
+        Math.max(
+          0,
+          computedEarned
         );
 
     }
+
+
+    /*
+     * PTO cannot accrue above the applicable maximum.
+     */
+    const earned =
+      round2(
+        Math.min(
+          requestedEarned,
+          Math.max(
+            0,
+            maxHours - beginBalance
+          )
+        )
+      );
 
 
     /*
@@ -2271,12 +2433,7 @@ function computeLedger(){
 
 
     /*
-     * The balance cannot be greater than the applicable
-     * maximum after accrual.
-     *
-     * We do NOT clamp downward here because an existing
-     * corrected beginning balance could legitimately be
-     * above the configured max and should remain visible.
+     * Carry ending balance forward.
      */
     balance =
       endingBalance;
@@ -2290,14 +2447,10 @@ function computeLedger(){
 
 
     /*
-     * Did the accrual get capped?
+     * Was the accrual capped?
      */
     const accrualCapped =
-      earned < computedEarned &&
-      !(
-        entry.earnedOverride != null &&
-        entry.earnedOverride !== ""
-      );
+      earned < requestedEarned;
 
 
     /*
@@ -2324,6 +2477,8 @@ function computeLedger(){
         earned,
 
         computedEarned,
+
+        requestedEarned,
 
         used,
 
@@ -2379,7 +2534,7 @@ function render(){
       fmtFull(
         parseISO(settings.startDate)
       )
-    } · ${settings.fte} FTE`;
+    } · ${Number(settings.fte).toFixed(2)} FTE`;
 
 
   const periods =
@@ -2483,11 +2638,19 @@ function renderHero(cur){
   }
 
 
+  /*
+   * Available Now is visually emphasized in red when the
+   * current balance has reached or exceeded the maximum.
+   */
+  const availableWarn =
+    cur.beginBalance >= cur.maxHours;
+
+
   hero.innerHTML = `
 
     <div
       class="stat ${
-        cur.overMax
+        availableWarn
           ? "warn"
           : ""
       }"
@@ -2511,7 +2674,7 @@ function renderHero(cur){
 
       <div
         class="foot ${
-          cur.overMax
+          cur.overMax || cur.maxedBeforeAccrual
             ? "flag"
             : ""
         }"
@@ -2748,7 +2911,7 @@ function renderTiers(){
 
             settings.tiers.splice(
               Number(
-                e.target.dataset.removeTier
+                e.currentTarget.dataset.removeTier
               ),
               1
             );
@@ -2794,12 +2957,6 @@ function renderSettingsFields(){
   ).checked =
     !!settings.github.autoSync;
 
-
-  document.getElementById(
-    "enableBeginningCorrections"
-  ).checked =
-    !!settings.enableBeginningCorrections;
-
 }
 
 
@@ -2822,17 +2979,8 @@ function renderLedger(
 
 
   /*
-   * IMPORTANT:
-   *
    * Groups are based on PAY DATE YEAR,
    * not pay-period start year.
-   *
-   * Therefore:
-   *
-   * Dec 17–Dec 30, 2025
-   * Pay date Jan 6, 2026
-   *
-   * appears under 2026.
    */
   const byYear =
     new Map();
@@ -2970,10 +3118,6 @@ function renderLedger(
                   Max
                 </th>
 
-                <th>
-                  Status
-                </th>
-
               </tr>
 
             </thead>
@@ -3015,153 +3159,58 @@ function renderLedger(
       }
 
 
-      if(p.overMax){
-
-        tr.classList.add("over");
-
-      }
-
-
       /*
-       * Beginning balance control.
+       * Beginning balance styling:
        *
-       * When corrections are disabled,
-       * display is read-only.
-       *
-       * When enabled,
-       * the field becomes editable.
+       * - Normal = ordinary ledger text
+       * - Corrected = italic + *
+       * - At/above max = bold red
+       * - Corrected + at/above max = italic + bold red + *
        */
-      let beginningHtml;
+      const correctedClass =
+        p.beginningCorrected
+          ? " corrected"
+          : "";
 
 
-      if(
-        settings.enableBeginningCorrections
-      ){
+      const maxedClass =
+        p.beginBalance >= p.maxHours
+          ? " maxed"
+          : "";
 
-        beginningHtml = `
 
-          <div class="beginning-display">
-
-            <input
-              class="beginning-input"
-              type="number"
-              step="0.01"
-              value="${
-                p.beginningCorrected
-                  ? p.beginBalance.toFixed(2)
-                  : ""
-              }"
-              placeholder="${
-                p.beginBalance.toFixed(2)
-              }"
-              data-beginning-key="${p.key}"
-              aria-label="Beginning balance for ${fmtPeriod(p.start,p.end)}"
+      const correctedStar =
+        p.beginningCorrected
+          ? `
+            <span
+              class="corrected-star"
+              aria-hidden="true"
             >
+              *
+            </span>
+          `
+          : "";
 
-            ${
-              p.beginningCorrected
-                ? `
-                  <span
-                    class="corrected-star"
-                    title="Corrected beginning balance"
-                  >
-                    *
-                  </span>
-                `
-                : ""
-            }
 
-          </div>
+      const beginningHtml = `
 
-        `;
+        <button
+          type="button"
+          class="beginning-edit-link${correctedClass}${maxedClass}"
+          data-beginning-key="${p.key}"
+          aria-label="Edit beginning balance for ${escapeHtml(fmtPeriod(p.start,p.end))}"
+          title="Click to edit beginning balance"
+        >
 
-      }
-
-      else{
-
-        beginningHtml = `
-
-          <span
-            class="beginning-display ${
-              p.beginningCorrected
-                ? "corrected"
-                : ""
-            }"
-          >
-
-            ${
-              p.beginBalance.toFixed(2)
-            }
-
-            ${
-              p.beginningCorrected
-                ? `
-                  <span class="corrected-star">
-                    *
-                  </span>
-                `
-                : ""
-            }
-
+          <span>
+            ${p.beginBalance.toFixed(2)}
           </span>
 
-        `;
+          ${correctedStar}
 
-      }
+        </button>
 
-
-      /*
-       * Status indicator.
-       */
-      let statusHtml = "";
-
-
-      if(p.beginningCorrected){
-
-        statusHtml += `
-          <span
-            class="flag"
-            style="
-              background:var(--blue-soft);
-              color:var(--navy);
-            "
-          >
-            Corrected
-          </span>
-        `;
-
-      }
-
-
-      if(p.overMax){
-
-        statusHtml += `
-          <span class="flag">
-            Over max
-          </span>
-        `;
-
-      }
-
-      else if(p.maxedBeforeAccrual){
-
-        statusHtml += `
-          <span class="maxed">
-            Accrual paused
-          </span>
-        `;
-
-      }
-
-      else if(p.accrualCapped){
-
-        statusHtml += `
-          <span class="maxed">
-            Accrual capped
-          </span>
-        `;
-
-      }
+      `;
 
 
       tr.innerHTML = `
@@ -3224,23 +3273,6 @@ function renderLedger(
         <td>
 
           ${p.maxHours.toFixed(2)}
-
-        </td>
-
-
-        <td>
-
-          ${
-            statusHtml ||
-            `<span
-              style="
-                color:var(--ink-faint);
-                font-size:12px;
-              "
-            >
-              —
-            </span>`
-          }
 
         </td>
 
@@ -3307,68 +3339,26 @@ function renderLedger(
 
   /*
    * Beginning-balance correction listeners.
+   *
+   * Every beginning balance is clickable. There is no
+   * persistent editing mode.
    */
   container
     .querySelectorAll(
-      ".beginning-input"
+      ".beginning-edit-link"
     )
     .forEach(
-      inp => {
+      btn => {
 
-        inp.addEventListener(
-          "change",
+        btn.addEventListener(
+          "click",
           e => {
 
             const key =
-              e.target.dataset.beginningKey;
+              e.currentTarget.dataset.beginningKey;
 
 
-            const raw =
-              e.target.value.trim();
-
-
-            /*
-             * Blank means remove correction.
-             */
-            if(raw === ""){
-
-              if(entries[key]){
-
-                delete entries[key]
-                  .beginningBalanceOverride;
-
-              }
-
-            }
-
-            else{
-
-              const val =
-                Number(raw);
-
-
-              if(
-                Number.isFinite(val)
-              ){
-
-                entries[key] =
-                  Object.assign(
-                    {},
-                    entries[key],
-                    {
-                      beginningBalanceOverride:
-                        round2(
-                          val
-                        )
-                    }
-                  );
-
-              }
-
-            }
-
-
-            onDataChange();
+            openCorrectionModal(key);
 
           }
         );
@@ -3464,6 +3454,339 @@ function renderLedger(
 
 
 /* ============================================================
+   BEGINNING BALANCE CORRECTION MODAL
+   ============================================================ */
+
+function openCorrectionModal(key){
+
+  const periods =
+    computeLedger();
+
+
+  const period =
+    periods.find(
+      p => p.key === key
+    );
+
+
+  if(!period){
+
+    return;
+
+  }
+
+
+  correctionEditKey =
+    key;
+
+
+  const entry =
+    entries[key] || {};
+
+
+  const existingCorrection =
+    entry.beginningBalanceOverride != null &&
+    entry.beginningBalanceOverride !== ""
+      ? Number(
+          entry.beginningBalanceOverride
+        )
+      : null;
+
+
+  const summary =
+    document.getElementById(
+      "correctionSummary"
+    );
+
+
+  summary.innerHTML = `
+
+    <div class="correction-summary-row">
+
+      <span class="correction-summary-label">
+        Pay period
+      </span>
+
+      <span class="correction-summary-value">
+        ${escapeHtml(
+          fmtPeriod(
+            period.start,
+            period.end
+          )
+        )}
+      </span>
+
+    </div>
+
+
+    <div class="correction-summary-row">
+
+      <span class="correction-summary-label">
+        Pay date
+      </span>
+
+      <span class="correction-summary-value">
+        ${escapeHtml(
+          fmtFull(
+            period.payDay
+          )
+        )}
+      </span>
+
+    </div>
+
+
+    <div class="correction-summary-row">
+
+      <span class="correction-summary-label">
+        Current calculated beginning
+      </span>
+
+      <span class="correction-summary-value">
+        ${period.beginBalance.toFixed(2)} hrs
+      </span>
+
+    </div>
+
+
+    ${
+      existingCorrection !== null
+        ? `
+          <div class="correction-summary-row">
+
+            <span class="correction-summary-label">
+              Saved correction
+            </span>
+
+            <span class="correction-summary-value">
+              ${existingCorrection.toFixed(2)} hrs
+            </span>
+
+          </div>
+        `
+        : ""
+    }
+
+  `;
+
+
+  const input =
+    document.getElementById(
+      "correctionValue"
+    );
+
+
+  input.value =
+    existingCorrection !== null
+      ? existingCorrection.toFixed(2)
+      : "";
+
+
+  document
+    .getElementById(
+      "removeCorrectionBtn"
+    )
+    .style.display =
+      existingCorrection !== null
+        ? "inline-flex"
+        : "none";
+
+
+  document
+    .getElementById(
+      "correctionOverlay"
+    )
+    .classList.add("open");
+
+
+  setTimeout(
+    () => {
+
+      input.focus();
+
+      input.select();
+
+    },
+    50
+  );
+
+
+  document.body.style.overflow =
+    "hidden";
+
+}
+
+
+function closeCorrectionModal(){
+
+  document
+    .getElementById(
+      "correctionOverlay"
+    )
+    .classList.remove("open");
+
+
+  correctionEditKey =
+    null;
+
+
+  /*
+   * Settings is a separate modal. Only release the body
+   * scroll lock if it is not open.
+   */
+  if(
+    !document
+      .getElementById(
+        "settingsOverlay"
+      )
+      .classList
+      .contains("open")
+  ){
+
+    document.body.style.overflow =
+      "";
+
+  }
+
+}
+
+
+function saveBeginningCorrection(){
+
+  if(!correctionEditKey){
+
+    return;
+
+  }
+
+
+  const input =
+    document.getElementById(
+      "correctionValue"
+    );
+
+
+  const raw =
+    input.value.trim();
+
+
+  if(raw === ""){
+
+    alert(
+      "Enter a beginning balance, or use Remove Correction to remove an existing correction."
+    );
+
+    input.focus();
+
+    return;
+
+  }
+
+
+  const value =
+    Number(raw);
+
+
+  if(
+    !Number.isFinite(value)
+  ){
+
+    alert(
+      "Please enter a valid beginning balance."
+    );
+
+    input.focus();
+
+    return;
+
+  }
+
+
+  if(value < 0){
+
+    alert(
+      "Beginning balance cannot be negative."
+    );
+
+    input.focus();
+
+    return;
+
+  }
+
+
+  const key =
+    correctionEditKey;
+
+
+  entries[key] =
+    Object.assign(
+      {},
+      entries[key],
+      {
+        beginningBalanceOverride:
+          round2(value)
+      }
+    );
+
+
+  closeCorrectionModal();
+
+
+  onDataChange();
+
+}
+
+
+function removeBeginningCorrection(){
+
+  if(!correctionEditKey){
+
+    return;
+
+  }
+
+
+  const key =
+    correctionEditKey;
+
+
+  if(entries[key]){
+
+    delete entries[key]
+      .beginningBalanceOverride;
+
+
+    /*
+     * Do not leave an empty entry behind if there is no
+     * other user-entered information in it.
+     */
+    const remainingKeys =
+      Object.keys(
+        entries[key]
+      );
+
+
+    if(
+      remainingKeys.length === 0
+    ){
+
+      delete entries[key];
+
+    }
+
+  }
+
+
+  closeCorrectionModal();
+
+
+  onDataChange();
+
+}
+
+
+/* ============================================================
    EVENTS
    ============================================================ */
 
@@ -3484,6 +3807,19 @@ function openSettingsModal(){
 
 function closeSettingsModal(){
 
+  /*
+   * If the correction modal is open, don't close the body
+   * scroll lock until that modal is also closed.
+   */
+  const correctionOpen =
+    document
+      .getElementById(
+        "correctionOverlay"
+      )
+      .classList
+      .contains("open");
+
+
   document
     .getElementById(
       "settingsOverlay"
@@ -3491,8 +3827,12 @@ function closeSettingsModal(){
     .classList.remove("open");
 
 
-  document.body.style.overflow =
-    "";
+  if(!correctionOpen){
+
+    document.body.style.overflow =
+      "";
+
+  }
 
 }
 
@@ -3607,19 +3947,135 @@ function init(){
     );
 
 
+  /*
+   * Correction modal.
+   */
+  document
+    .getElementById(
+      "closeCorrectionBtn"
+    )
+    .addEventListener(
+      "click",
+      closeCorrectionModal
+    );
+
+
+  document
+    .getElementById(
+      "cancelCorrectionBtn"
+    )
+    .addEventListener(
+      "click",
+      closeCorrectionModal
+    );
+
+
+  document
+    .getElementById(
+      "saveCorrectionBtn"
+    )
+    .addEventListener(
+      "click",
+      saveBeginningCorrection
+    );
+
+
+  document
+    .getElementById(
+      "removeCorrectionBtn"
+    )
+    .addEventListener(
+      "click",
+      removeBeginningCorrection
+    );
+
+
+  document
+    .getElementById(
+      "correctionOverlay"
+    )
+    .addEventListener(
+      "click",
+      e => {
+
+        if(
+          e.target.id ===
+          "correctionOverlay"
+        ){
+
+          closeCorrectionModal();
+
+        }
+
+      }
+    );
+
+
+  /*
+   * Enter key saves the correction.
+   */
+  document
+    .getElementById(
+      "correctionValue"
+    )
+    .addEventListener(
+      "keydown",
+      e => {
+
+        if(e.key === "Enter"){
+
+          e.preventDefault();
+
+          saveBeginningCorrection();
+
+        }
+
+      }
+    );
+
+
+  /*
+   * Escape closes the currently active modal.
+   */
   document.addEventListener(
     "keydown",
     e => {
 
-      if(
-        e.key === "Escape" &&
+      if(e.key !== "Escape"){
+
+        return;
+
+      }
+
+
+      const correctionOpen =
+        document
+          .getElementById(
+            "correctionOverlay"
+          )
+          .classList
+          .contains("open");
+
+
+      if(correctionOpen){
+
+        closeCorrectionModal();
+
+        return;
+
+      }
+
+
+      const settingsOpen =
         document
           .getElementById(
             "settingsOverlay"
           )
           .classList
-          .contains("open")
-      ){
+          .contains("open");
+
+
+      if(settingsOpen){
 
         closeSettingsModal();
 
@@ -3683,26 +4139,6 @@ function init(){
           Number(
             e.target.value
           );
-
-        onDataChange();
-
-      }
-    );
-
-
-  /*
-   * Beginning-balance corrections.
-   */
-  document
-    .getElementById(
-      "enableBeginningCorrections"
-    )
-    .addEventListener(
-      "change",
-      e => {
-
-        settings.enableBeginningCorrections =
-          e.target.checked;
 
         onDataChange();
 
@@ -4325,10 +4761,7 @@ async function loadFromGitHub(
     if(payload.settings){
 
       settings =
-        Object.assign(
-          structuredClone(
-            DEFAULT_SETTINGS
-          ),
+        normalizeSettings(
           payload.settings
         );
 
@@ -4341,6 +4774,16 @@ async function loadFromGitHub(
         payload.entries;
 
     }
+
+
+    /*
+     * Beginning-balance corrections are stored directly
+     * in entries and therefore load automatically.
+     *
+     * The old enableBeginningCorrections setting is ignored
+     * and removed from the active settings object.
+     */
+    delete settings.enableBeginningCorrections;
 
 
     persistLocal();
@@ -4443,6 +4886,9 @@ function exportBackup(){
 
   a.click();
 
+
+  URL.revokeObjectURL(a.href);
+
 }
 
 
@@ -4476,10 +4922,7 @@ function importBackup(e){
       if(payload.settings){
 
         settings =
-          Object.assign(
-            structuredClone(
-              DEFAULT_SETTINGS
-            ),
+          normalizeSettings(
             payload.settings
           );
 
@@ -4492,6 +4935,13 @@ function importBackup(e){
           payload.entries;
 
       }
+
+
+      /*
+       * Remove the legacy setting if it exists in an
+       * older backup.
+       */
+      delete settings.enableBeginningCorrections;
 
 
       persistLocal();
