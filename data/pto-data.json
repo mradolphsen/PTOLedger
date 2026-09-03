@@ -95,7 +95,8 @@
       "used": 7.52
     },
     "2026-07-29": {
-      "used": 8
+      "used": 8,
+      "beginningBalanceOverride": 188.14
     },
     "2026-08-26": {
       "used": 8
@@ -113,5 +114,5 @@
       "beginningBalanceOverride": 148.37
     }
   },
-  "savedAt": "2026-09-03T00:48:30.512Z"
+  "savedAt": "2026-09-03T00:49:41.963Z"
 }
