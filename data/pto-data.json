@@ -2,7 +2,6 @@
   "settings": {
     "startDate": "2024-07-22",
     "fte": 1,
-    "enableBeginningCorrections": false,
     "tiers": [
       {
         "minYears": 0,
@@ -109,7 +108,10 @@
     },
     "2026-12-30": {
       "used": 16
+    },
+    "2026-02-11": {
+      "beginningBalanceOverride": 148.37
     }
   },
-  "savedAt": "2026-09-03T00:39:59.754Z"
+  "savedAt": "2026-09-03T00:48:30.512Z"
 }
