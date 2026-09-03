@@ -2,7 +2,7 @@
   "settings": {
     "startDate": "2024-07-22",
     "fte": 1,
-    "enableBeginningCorrections": true,
+    "enableBeginningCorrections": false,
     "tiers": [
       {
         "minYears": 0,
@@ -111,5 +111,5 @@
       "used": 16
     }
   },
-  "savedAt": "2026-09-03T00:33:44.348Z"
+  "savedAt": "2026-09-03T00:39:59.754Z"
 }
